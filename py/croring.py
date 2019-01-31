@@ -1,3 +1,10 @@
+```
+教師データ収集用コード
+Google画像検索から 画像をクローリングしてきて新規ファイルを生成して保存
+```
+
+# coding:utf-8
+
 import json
 import os
 import sys
@@ -65,11 +72,18 @@ def main():
         print('> ./image_collector_cui.py [target name] [download number]')
         sys.exit()
     else:
-        # save location
-        name = sys.argv[1]
-        data_dir = 'data/'
-        os.makedirs(data_dir, exist_ok=True)
-        os.makedirs('data/' + name, exist_ok=True)
+        try:
+            # save location
+            name = sys.argv[1]
+            data_dir = '../images/'
+            os.makedirs(data_dir)
+            os.makedirs('../images/' + name)
+
+        except:
+            raise Exception
+            print('filename %s is already exist' % name)
+
+        
 
         # search image
         result = google.search(
