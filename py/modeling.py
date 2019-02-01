@@ -1,10 +1,10 @@
 # coding:utf-8
-```
-モデルを生成するためのコード
-modelsから特定の画像を
-```
 
-import keras
+# モデルを生成するためのコード
+# 獺祭と久保田のラベルの画像を12枚学習し3枚でテストする
+
+import keras 
+import matplotlib.pyplot as plt
 from keras.utils import np_utils
 from keras.models import Sequential, model_from_json
 from keras.layers.convolutional import Conv2D, MaxPooling2D
@@ -13,8 +13,8 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from PIL import Image
 import glob
-
-folder = ["dassai_images", "kubota_images"]
+model_name = 'dassai_kubota_bottle'
+folder = ["dassai_bottle_images", "kubota_bottle_images"]
 image_size = 50
 
 X = []
@@ -66,13 +66,26 @@ model.add(Activation('softmax'))
 
 model.compile(loss='categorical_crossentropy',optimizer='SGD',metrics=['accuracy'])
 
-history = model.fit(X_train, y_train, epochs=200)
+tb_cb = keras.callbacks.TensorBoard(log_dir='../log', histogram_freq=1)
+cbks = [tb_cb]
+history = model.fit(X_train, y_train, epochs=200,callbacks=cbks)
+
+print(history.losses)
 
 print(model.evaluate(X_test, y_test))
 
+# fig, (axL, axR) = plt.subplots(ncols=2, figsize=(10,4))
+
+# axL.plot(history.history['loss'],label="loss for training")
+# axL.plot(history.history['val_loss'],label="loss for validation")
+# axL.set_title('model loss')
+# axL.set_xlabel('epoch')
+# axL.set_ylabel('loss')
+# axL.legend(loc='upper right')
+
 json_string = model.to_json() # モデルの保存
-open('../models/ponsh_model01.json', 'w').write(json_string)
-model.save_weights('../weights/ponsh_weights01.h5') # 重みデータの保存
+open('../models/'+model_name+'_model01.json', 'w').write(json_string)
+model.save_weights('../weights/'+model_name+'_weights01.h5') # 重みデータの保存
 
 x = []
 x_test = Image.open("../dassai1.jpg")
@@ -111,7 +124,7 @@ print("dassai3")
 print(model.predict(x))
 
 x = []
-x_test = Image.open("../kubota.jpg")
+x_test = Image.open("../kubota01.jpg")
 x_test = x_test.convert("RGB")
 x_test = x_test.resize((image_size, image_size))
 x_data = np.asarray(x_test)
@@ -119,6 +132,29 @@ x.append(x_data)
 x = np.array(x)
 x = x.astype('float32')
 x = x / 255.0
-print("kubota")
+print("kubota01")
 print(model.predict(x))
 
+x = []
+x_test = Image.open("../kubota02.jpg")
+x_test = x_test.convert("RGB")
+x_test = x_test.resize((image_size, image_size))
+x_data = np.asarray(x_test)
+x.append(x_data)
+x = np.array(x)
+x = x.astype('float32')
+x = x / 255.0
+print("kubota02")
+print(model.predict(x))
+
+x = []
+x_test = Image.open("../kubota03.jpg")
+x_test = x_test.convert("RGB")
+x_test = x_test.resize((image_size, image_size))
+x_data = np.asarray(x_test)
+x.append(x_data)
+x = np.array(x)
+x = x.astype('float32')
+x = x / 255.0
+print("kubota03")
+print(model.predict(x))
